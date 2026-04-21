@@ -17,6 +17,8 @@ OBJ = kernel/boot.o   \
       kernel/vga.o    \
       kernel/keyboard.o \
       kernel/fs.o     \
+      kernel/ata.o    \
+      kernel/fs_persist.o \
       kernel/shell.o  \
       kernel/shellcommands/cmd_system.o \
       kernel/shellcommands/cmd_fs.o     \
@@ -25,12 +27,21 @@ OBJ = kernel/boot.o   \
       kernel/shellcommands/cmd_bf.o     \
       kernel/kernel.o
 
-ISO = tpbos.iso
-BIN = tpbos.bin
+ISO  = tpbos.iso
+BIN  = tpbos.bin
+DISK = disk.img
 
-.PHONY: all iso clean run
+# Tamaño del disco virtual: 1 MB (2048 sectores × 512 bytes)
+DISK_SECTORS = 2048
+
+.PHONY: all iso clean clean-disk run
 
 all: $(BIN)
+
+# ── Imagen de disco persistente (se crea solo si no existe) ───────────────────
+$(DISK):
+	dd if=/dev/zero of=$(DISK) bs=512 count=$(DISK_SECTORS)
+	@echo "  Disco virtual creado: $(DISK)"
 
 kernel/boot.o: kernel/boot.asm
 	$(NASM) $(NASMFLAGS) $< -o $@
@@ -52,9 +63,20 @@ iso: $(BIN)
 	@echo ""
 	@echo "  ISO lista: $(ISO)"
 
-run: iso
-	qemu-system-i386 -cdrom $(ISO) -m 64M -no-reboot -no-shutdown
+# ── Run: arranca con el CD + disco persistente ────────────────────────────────
+run: iso $(DISK)
+	qemu-system-i386 \
+	  -cdrom $(ISO) \
+	  -drive file=$(DISK),format=raw,index=1,media=disk \
+	  -m 64M -no-reboot -no-shutdown
 
+# ── clean NO borra disk.img para preservar tus archivos ──────────────────────
 clean:
 	rm -f kernel/*.o kernel/shellcommands/*.o $(BIN) $(ISO)
 	rm -rf iso
+	@echo "  Nota: $(DISK) no se borró. Usa 'make clean-disk' para borrarlo también."
+
+# ── Borrar todo incluyendo el disco (pierdes los archivos guardados) ──────────
+clean-disk: clean
+	rm -f $(DISK)
+	@echo "  Disco virtual eliminado."
