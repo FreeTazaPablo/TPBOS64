@@ -1,6 +1,6 @@
 # TP-BOS
 
-**Taza Pablo Boot Operating System** - sistema operativo de terminal inspirado en MS-DOS, escrito desde cero en C y Assembly x86.
+**Taza Pablo Boot Operating System** - sistema operativo de terminal inspirado en MS-DOS, escrito desde cero en C y Assembly (x86 y x86_64).
 
 Corre en bare-metal (o QEMU), con su propio kernel, shell interactivo, sistema de archivos en RAM con **persistencia en disco**, driver ATA PIO, driver VGA de texto, y hasta un intérprete de Brainfuck!!
 
