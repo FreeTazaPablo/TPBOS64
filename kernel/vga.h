@@ -1,9 +1,16 @@
 #ifndef VGA_H
 #define VGA_H
 
-typedef unsigned char  uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int   uint32_t;
+/*
+ * En modo 64-bit no tenemos stdint.h (compilamos con -nostdinc),
+ * así que definimos los tipos manualmente.
+ * Usamos __UINT8_TYPE__ etc. si el compilador los provee,
+ * o caemos en los tamaños garantizados para x86_64.
+ */
+typedef unsigned char      uint8_t;
+typedef unsigned short     uint16_t;
+typedef unsigned int       uint32_t;
+typedef unsigned long long uint64_t;
 
 /* Colores VGA */
 #define VGA_BLACK         0

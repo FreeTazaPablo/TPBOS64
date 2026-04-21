@@ -19,7 +19,14 @@ static void pic_disable(void) {
     outb(0x21, 0xFF);
 }
 
-void kernel_main(unsigned long mb_magic, unsigned long mb_info) {
+/*
+ * En x86_64 SysV ABI los argumentos llegan en registros (rdi, rsi),
+ * no en el stack como en 32 bits. boot.asm ya coloca mb_magic en rdi
+ * y mb_info en rsi antes de llamar a kernel_main.
+ *
+ * Usamos unsigned int (32 bits) porque Multiboot devuelve valores de 32 bits.
+ */
+void kernel_main(unsigned int mb_magic, unsigned int mb_info) {
     (void)mb_magic;
     (void)mb_info;
 
@@ -33,7 +40,7 @@ void kernel_main(unsigned long mb_magic, unsigned long mb_info) {
 
     /* ── Banner de arranque ──────────────────────────────────────────────── */
     vga_print_color(
-        "TP-BOS v0.1 [Taza Pablo Boot Operating System]\n",
+        "TP-BOS v0.1 [Taza Pablo Boot Operating System] (64-bit)\n",
         VGA_WHITE, VGA_BLACK
     );
     vga_print_color(
