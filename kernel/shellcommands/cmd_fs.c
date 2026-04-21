@@ -1,4 +1,5 @@
 #include "shell_defs.h"
+#include "fs_persist.h"
 
 /* ── copy origen destino ─────────────────────────────────────────────────── */
 void cmd_copy(const char *line) {
@@ -50,6 +51,7 @@ void cmd_copy(const char *line) {
     const char *content = fs_read(src_idx);
     if (content) fs_write(new_idx, content);
 
+    fs_save_to_disk();
     vga_print("'"); vga_print(src_name);
     vga_print("' copiado a '"); vga_print(new_name); vga_println("'.");
 }
@@ -82,6 +84,7 @@ void cmd_new(const char *line) {
     if (idx < 0) {
         vga_print_color("Error: ya existe o no hay espacio.\n", VGA_LIGHT_RED, VGA_BLACK);
     } else {
+        fs_save_to_disk();
         vga_print(type == NODE_FILE ? "Archivo" : "Directorio");
         vga_print(" '"); vga_print(name); vga_println("' creado.");
     }
@@ -100,6 +103,7 @@ void cmd_remove(const char *line) {
     }
     FSNode *n = fs_get(idx);
     if (fs_remove(idx) == 0) {
+        fs_save_to_disk();
         vga_print(n->type == NODE_FILE ? "Archivo" : "Directorio");
         vga_print(" '"); vga_print(name); vga_println("' eliminado.");
     }
@@ -128,6 +132,7 @@ void cmd_move(const char *line) {
     if (fs_get(dst_idx)->type != NODE_DIR) { vga_println("El destino debe ser un directorio."); return; }
 
     if (fs_move(src_idx, dst_idx) == 0) {
+        fs_save_to_disk();
         vga_print("'"); vga_print(src_name); vga_print("' movido a '"); vga_print(dst_name); vga_println("'.");
     }
 }
@@ -152,6 +157,7 @@ void cmd_rename(const char *line) {
     if (k_strlen(new_name) == 0 || k_strlen(new_name) >= FS_MAX_NAME) { vga_println("Nombre invalido."); return; }
 
     if (fs_rename(idx, new_name) == 0) {
+        fs_save_to_disk();
         vga_print("'"); vga_print(old_name); vga_print("' renombrado a '"); vga_print(new_name); vga_println("'.");
     }
 }
@@ -312,6 +318,7 @@ void cmd_open(const char *line) {
         if (c == 19) {   /* Ctrl+S */
             buf[blen] = '\0';
             fs_write(idx, buf);
+            fs_save_to_disk();
             vga_clear();
             vga_print_color("[Guardado] ", VGA_YELLOW, VGA_BLACK);
             vga_println(name);
@@ -599,6 +606,7 @@ void cmd_write(const char *line) {
     }
     if (fs_get(idx)->type != NODE_FILE) { vga_println("No es un archivo."); return; }
     fs_write(idx, text);
+    fs_save_to_disk();
     vga_print("Escrito en '"); vga_print(fname); vga_println("'.");
 }
 
@@ -637,6 +645,7 @@ void cmd_append(const char *line) {
     while (text[j] && pos < FS_MAX_CONTENT - 1) newbuf[pos++] = text[j++];
     newbuf[pos] = '\0';
     fs_write(idx, newbuf);
+    fs_save_to_disk();
     vga_print("Texto anadido a '"); vga_print(fname); vga_println("'.");
 }
 
