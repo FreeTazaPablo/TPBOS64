@@ -385,12 +385,12 @@ static const char *help_content =
     "  help -> Mostrar esta ayuda    | open [archivo] -> Abrir/editar archivo\n"
     "  go [carpeta] -> Ir a carpeta  | list -> Listar contenido\n"
     "  repeat [N] [cmd] -> Repetir   | append [archivo] [texto] -> Anadir\n"
-    "  new [file|dir] nombre -> Crear | rename [nombre] to [nuevo] -> Renombrar\n"
+    "  new [file|dir] nombre -> Crear| rename [nombre] to [nuevo] -> Renombrar\n"
     "  calc [expr] -> Calculadora    | tree [dir] -> Arbol del FS\n"
     "  wordc [arch] -> Contar lineas | head [arch] [N] -> Primeras N lineas\n"
     "  tail [arch] [N] -> Ultimas N  | sleep [N] -> Pausa N segundos\n"
     "  hex [num] -> Decimal a hex    | bin [num] -> Decimal a binario\n"
-    "  bf <codigo> -> Interprete BF    | bfrun <archivo> -> Ejecutar .bf del FS";
+    "  bfrun [archivo] -> Correr .bf | date -> Fecha\n";
 
 void shell_run(void) {
     int root = fs_root();
